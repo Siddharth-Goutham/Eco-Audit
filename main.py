@@ -21,9 +21,10 @@ class EcoAudit(TypedDict):
     region: str
     username: str
 
+# FIX 1: Safely fetched the OpenRouter API key using .get() to prevent NameError
+OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY", "your_openrouter_api_key_here")
+os.environ["OPENROUTER_API_KEY"] = OPENROUTER_API_KEY
 
-OPENROUTER_API_KEY = os.environ("OPENROUTER_API_KEY")
-os.environ["OPENROUTER_API_KEY"]= OPENROUTER_API_KEY
 model = ChatOpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=os.environ["OPENROUTER_API_KEY"],
@@ -49,7 +50,8 @@ def carbon_emission(location: str, distance: float, commute_method: str):
 
     return round(total_carbon, 4)
 
-TAVILY_API_KEY = os.environ("TAVILY_API_KEY")
+# FIX 2: Used .get() instead of calling os.environ as a function to prevent TypeError
+TAVILY_API_KEY = os.environ.get("TAVILY_API_KEY", "your_tavily_api_key_here")
 
 web_search = TavilySearchResults(max_results=3, tavily_api_key=TAVILY_API_KEY)
 @tool

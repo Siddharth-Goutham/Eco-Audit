@@ -89,7 +89,7 @@ def research_node(state: EcoAudit):
     bind_llm = model.bind_tools([research_finder], tool_choice="research_finder")
 
     messages = [
-        SystemMessage(content="You are a research assistant. Create a highly specific internet search query to find the exact address of an e-waste center for the user's location. Pass that query to your search tool. Provide the exact location precisely according to the human given content."),
+        SystemMessage(content="You are a research assistant. Create a highly specific internet search query to find the exact address of an e-waste center for the user's location. Pass that query to your search tool. Provide the exact location precisely according to the human given content.If you dont know the address, then say, 'I dont have any information about it'"),
         HumanMessage(content=f"city: {state.get('location')} region: {state.get('region', '')}")
     ]
 

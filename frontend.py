@@ -14,7 +14,7 @@ with st.sidebar:
     region = st.text_input("Region")
     housing = st.selectbox("Housing Status", ["Renter", "Owner"])
     distance = st.number_input("Distance travelled per day (Km)")
-    commute = st.text_input("Primary Commute")
+    commute = st.text_input("Primary Commute (eg. Petrol Car)")
 
 
 if st.button("Generate Action Plan"):

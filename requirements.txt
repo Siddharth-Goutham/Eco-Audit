@@ -1,0 +1,7 @@
+langgraph
+langchain-core
+langchain-openai
+langchain-community
+duckduckgo-search
+streamlit
+gunicorn

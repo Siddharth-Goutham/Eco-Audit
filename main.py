@@ -8,6 +8,7 @@ from langchain_openai import ChatOpenAI
 from langgraph.graph import StateGraph, START, END
 from langchain_core.tools import tool
 from langchain_community.tools import DuckDuckGoSearchRun
+from langchain_community.tools.tavily_search import TavilySearchResults
 
 
 class EcoAudit(TypedDict):
@@ -21,7 +22,7 @@ class EcoAudit(TypedDict):
     username: str
 
 
-OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")
+OPENROUTER_API_KEY = os.environ("OPENROUTER_API_KEY")
 os.environ["OPENROUTER_API_KEY"]= OPENROUTER_API_KEY
 model = ChatOpenAI(
     base_url="https://openrouter.ai/api/v1",
@@ -48,13 +49,16 @@ def carbon_emission(location: str, distance: float, commute_method: str):
 
     return round(total_carbon, 4)
 
-web_search=DuckDuckGoSearchRun()
+TAVILY_API_KEY = os.environ("TAVILY_API_KEY")
+
+web_search = TavilySearchResults(max_results=3, tavily_api_key=TAVILY_API_KEY)
 @tool
 def research_finder(query: str):
     """Searches the live internet for local eco-resources, e-waste centers, and composting facilities.
     Pass a specific search query like 'nearest e-waste recycling center in Urwa Store Mangalore'.
     """
-    return web_search.invoke(query)
+    results = web_search.invoke({"query": query})
+    return str(results)
 
 @tool
 def govt_subsidary(location: str, housing_status:str):
@@ -81,6 +85,7 @@ def carbon_emission_calculator(state: EcoAudit):
 def research_node(state: EcoAudit):
 
     bind_llm = model.bind_tools([research_finder], tool_choice="research_finder")
+
     messages = [
         SystemMessage(content="You are a research assistant. Create a highly specific internet search query to find the exact address of an e-waste center for the user's location. Pass that query to your search tool. Provide the exact location precisely according to the human given content."),
         HumanMessage(content=f"city: {state.get('location')} region: {state.get('region', '')}")
